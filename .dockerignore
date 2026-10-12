@@ -1,0 +1,23 @@
+# Secrets - never send to the build context
+service-account.json
+.env
+
+# Ignore local data files (will be created fresh or mounted)
+data/
+tmp_jobs/
+*.pfx
+worker_status.json
+processed_jobs.json
+
+# Ignore development/test files
+test_*.py
+create_certificate.py
+README.md
+__pycache__/
+*.pyc
+.git/
+.gitignore
+
+# Ignore IDE files
+.vscode/
+.idea/

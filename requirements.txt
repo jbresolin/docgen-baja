@@ -1,0 +1,14 @@
+# Google Drive API
+google-api-python-client>=2.100.0
+google-auth>=2.23.0
+
+# PDF generation and manipulation
+reportlab>=4.0.0
+pypdf>=4.0.0
+
+# Digital signing
+pyhanko>=0.20.0
+cryptography>=41.0.0
+
+# HTTP requests
+requests>=2.31.0

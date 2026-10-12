@@ -1,0 +1,26 @@
+# Secrets - never commit these
+service-account.json
+*.pfx
+.env
+
+# Runtime / generated state
+data/
+tmp_jobs/
+worker_status.json
+processed_jobs.json
+error_log.json
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db

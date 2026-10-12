@@ -1,0 +1,40 @@
+version: "3.8"
+
+services:
+  docgen-worker:
+    build: .
+    container_name: docgen-worker
+    restart: unless-stopped
+
+    # Mount a volume for persistent data (certificate, status files)
+    volumes:
+      - docgen-data:/app/data
+      # Google service account key, mounted read-only. If you pass the key via
+      # GOOGLE_SERVICE_ACCOUNT_JSON instead, remove this line.
+      - ${SERVICE_ACCOUNT_FILE:-./service-account.json}:/app/service-account.json:ro
+
+    environment:
+      - PYTHONUNBUFFERED=1
+      # Event / API configuration - changes per event, set these in Portainer
+      - EVENT_CODE=${EVENT_CODE:-26BR}
+      - API_BASE_URL=${API_BASE_URL}
+      - API_KEY=${API_KEY}
+      - PFX_PASSWORD=${PFX_PASSWORD:?PFX_PASSWORD must be set to a non-empty value}
+      # Alternative to the service-account.json mount: whole key file, base64
+      - GOOGLE_SERVICE_ACCOUNT_JSON=${GOOGLE_SERVICE_ACCOUNT_JSON:-}
+      # Resend email notifications (get API key from https://resend.com)
+      - RESEND_API_KEY=${RESEND_API_KEY:-}
+      - NOTIFY_EMAIL_TO=${NOTIFY_EMAIL_TO:-}
+      - NOTIFY_EMAIL_FROM=${NOTIFY_EMAIL_FROM:-DocGen Worker <onboarding@resend.dev>}
+
+    # Command with options - uncomment the one you want:
+    # Normal mode (default):
+    command: ["python", "docgen_worker.py"]
+    # Verbose mode:
+    # command: ["python", "docgen_worker.py", "--verbose"]
+    # Verbose + custom poll interval (30 seconds):
+    # command: ["python", "docgen_worker.py", "--verbose", "--poll-interval", "30"]
+
+volumes:
+  docgen-data:
+    driver: local
