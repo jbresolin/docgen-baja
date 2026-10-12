@@ -156,10 +156,10 @@ cp .env.example .env   # fill in the values
 docker compose up -d --build
 ```
 
-The Google key is never baked into the image. Either mount the key file
-(default: `./service-account.json`, override with `SERVICE_ACCOUNT_FILE`) or
-set `GOOGLE_SERVICE_ACCOUNT_JSON` and remove the mount line from
-`docker-compose.yml`.
+The Google key is never baked into the image. Set `GOOGLE_SERVICE_ACCOUNT_JSON`
+(the default route, and the one to use for a Portainer git stack), or
+uncomment the mount line in `docker-compose.yml` to mount the key file instead
+(default: `./service-account.json`, override with `SERVICE_ACCOUNT_FILE`).
 
 **Option 2: systemd (Linux)**
 ```ini
