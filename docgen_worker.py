@@ -67,12 +67,27 @@ from pyhanko.pdf_utils.incremental_writer import IncrementalPdfFileWriter
 # CONFIG
 # ---------------------------------------------------------------------------
 
+def env_number(name, default, cast, minimum):
+    """Read a numeric env var; blank means default, invalid values stop startup."""
+    raw = os.environ.get(name, "").strip()
+    if not raw:
+        return default
+    try:
+        value = cast(raw)
+    except ValueError:
+        kind = "a whole number" if cast is int else "a number"
+        raise RuntimeError(f"{name} must be {kind}, got {raw!r}")
+    if value < minimum:
+        raise RuntimeError(f"{name} must be at least {minimum}, got {raw!r}")
+    return value
+
+
 API_BASE_URL = os.environ.get("API_BASE_URL", "")
 API_KEY = os.environ.get("API_KEY", "")
 
 EVENT_CODE = os.environ.get("EVENT_CODE", "26BR")
-POLL_INTERVAL = 60
-NUM_WORKERS = 4
+POLL_INTERVAL = env_number("POLL_INTERVAL", 60, int, minimum=1)  # Seconds between polls
+NUM_WORKERS = env_number("NUM_WORKERS", 4, int, minimum=1)  # Parallel job threads
 
 # Google service account credentials: either the whole key file in the
 # GOOGLE_SERVICE_ACCOUNT_JSON env var (raw JSON or base64), or a file on disk.
@@ -90,7 +105,8 @@ PFX_PASSWORD = os.environ.get("PFX_PASSWORD", "")  # Required - checked in main(
 # Health check and job tracking
 STATUS_FILE = "./data/worker_status.json"
 PROCESSED_JOBS_FILE = "./data/processed_jobs.json"
-JOB_DEDUP_HOURS = 1  # Don't reprocess jobs completed in the last N hours
+# Don't reprocess jobs completed in the last N hours (0 disables dedup)
+JOB_DEDUP_HOURS = env_number("JOB_DEDUP_HOURS", 1.0, float, minimum=0)
 
 # Email notifications via Resend
 RESEND_API_KEY = os.environ.get("RESEND_API_KEY", "")  # Set via environment variable
@@ -768,6 +784,7 @@ def main():
     logger.info("=" * 60)
     logger.info(f"Verbose mode: {VERBOSE}")
     logger.info(f"Poll interval: {poll_interval}s")
+    logger.info(f"Workers: {NUM_WORKERS}")
     logger.info(f"Dedup hours: {JOB_DEDUP_HOURS}h")
     logger.info(f"API URL: {API_BASE_URL[:50]}...")
     logger.info(f"Event code: {EVENT_CODE}")

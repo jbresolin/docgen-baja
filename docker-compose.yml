@@ -18,6 +18,10 @@ services:
       - API_BASE_URL=${API_BASE_URL}
       - API_KEY=${API_KEY}
       - PFX_PASSWORD=${PFX_PASSWORD:?PFX_PASSWORD must be set to a non-empty value}
+      # Tuning (optional - blank uses the defaults: 60s, 4 workers, 1h)
+      - POLL_INTERVAL=${POLL_INTERVAL:-}
+      - NUM_WORKERS=${NUM_WORKERS:-}
+      - JOB_DEDUP_HOURS=${JOB_DEDUP_HOURS:-}
       # Google service account: the whole key file, base64-encoded
       - GOOGLE_SERVICE_ACCOUNT_JSON=${GOOGLE_SERVICE_ACCOUNT_JSON:-}
       # Resend email notifications (get API key from https://resend.com)
@@ -30,8 +34,6 @@ services:
     command: ["python", "docgen_worker.py"]
     # Verbose mode:
     # command: ["python", "docgen_worker.py", "--verbose"]
-    # Verbose + custom poll interval (30 seconds):
-    # command: ["python", "docgen_worker.py", "--verbose", "--poll-interval", "30"]
 
 volumes:
   docgen-data:

@@ -128,15 +128,14 @@ variables in Portainer — they are never hardcoded in source):
 | `RESEND_API_KEY` | (optional) Resend API key for failure-email alerts |
 | `NOTIFY_EMAIL_TO` | (optional) alert recipient address — no emails are sent if empty |
 | `NOTIFY_EMAIL_FROM` | (optional) alert sender address |
+| `POLL_INTERVAL` | (optional) seconds between polls, default `60` |
+| `NUM_WORKERS` | (optional) parallel job threads, default `4` |
+| `JOB_DEDUP_HOURS` | (optional) skip jobs completed in the last N hours, default `1`; `0` disables dedup |
 | `SHARED_DRIVE_ID` | Only for `test_drive_access.py`: the Shared Drive to test against |
 
-**Fixed settings** (in `docgen_worker.py`, not expected to change per event):
-
-```python
-POLL_INTERVAL = 60      # Seconds between polls
-NUM_WORKERS = 4          # Parallel job threads
-JOB_DEDUP_HOURS = 1      # Job deduplication window
-```
+Blank tuning values fall back to the defaults; a non-numeric or out-of-range
+value stops the worker at startup. The `--poll-interval` and `--dedup-hours`
+command-line flags, when given, override the env vars.
 
 ---
 
