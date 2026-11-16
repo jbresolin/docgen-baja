@@ -364,8 +364,9 @@ def personalize_pdf(input_pdf, output_pdf, hex_id, judge_name=""):
     watermark = make_watermark(hex_id, judge_name)
 
     for page in reader.pages:
-        page.merge_page(watermark.pages[0])
-        writer.add_page(page)
+        # pypdf 7+: page must belong to the writer before merging into it
+        out_page = writer.add_page(page)
+        out_page.merge_page(watermark.pages[0])
 
     with open(output_pdf, "wb") as f:
         writer.write(f)
